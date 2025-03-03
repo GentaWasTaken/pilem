@@ -66,15 +66,6 @@ class _SearchScreenState extends State<SearchScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 1.0,
-                ),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
