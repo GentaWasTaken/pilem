@@ -4,7 +4,7 @@ import 'package:pilem/screens/detail_screen.dart';
 import 'package:pilem/services/api_services.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -45,7 +45,8 @@ class _SearchScreenState extends State<SearchScreen> {
       final List<Map<String, dynamic>> searchData =
       await ApiServices().searchMovie(_searchController.text);
       setState(() {
-        _searchResult = searchData.map((e) => Movie.fromJson(e)).toList();
+        _searchResult =
+            searchData.map((e) => Movie.fromJson(e)).toList();
       });
     } catch (e) {
       debugPrint("Error fetching search results: $e");
@@ -54,6 +55,13 @@ class _SearchScreenState extends State<SearchScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    setState(() {
+      _searchResult.clear();
+    });
   }
 
   @override
@@ -66,15 +74,25 @@ class _SearchScreenState extends State<SearchScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: "Search movies...",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+            Stack(
+              children: [
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: "Search movies...",
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: _clearSearch,
+                    )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 16),
             if (_isLoading)
@@ -88,25 +106,29 @@ class _SearchScreenState extends State<SearchScreen> {
                 itemCount: _searchResult.length,
                 itemBuilder: (context, index) {
                   final movie = _searchResult[index];
-                  return ListTile(
-                    leading: Image.network(
-                      'https://image.tmdb.org/t/p/w92${movie.posterPath}',
-                      width: 50,
-                      height: 75,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.broken_image),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: ListTile(
+                      leading: Image.network(
+                        'https://image.tmdb.org/t/p/w92${movie.posterPath}',
+                        width: 50,
+                        height: 75,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.broken_image),
+                      ),
+                      title: Text(movie.title),
+                      subtitle: Text("Rating: ${movie.voteAverage}"),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MovieDetailScreen(movie: movie),
+                          ),
+                        );
+                      },
                     ),
-                    title: Text(movie.title),
-                    subtitle: Text("Rating: ${movie.voteAverage}"),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MovieDetailScreen(movie: movie),
-                        ),
-                      );
-                    },
                   );
                 },
               ),
