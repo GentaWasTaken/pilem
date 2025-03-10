@@ -19,9 +19,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Map<String, dynamic>> allMovieData =
         await ApiServices().getAllMovie();
     final List<Map<String, dynamic>> allTrendingData =
-        await ApiServices().getAllMovie();
+        await ApiServices().getTrendingMovie();
     final List<Map<String, dynamic>> allPopularData =
-        await ApiServices().getAllMovie();
+        await ApiServices().getPopularMovie();
 
     setState(() {
       _allMovies = allMovieData.map((e) => Movie.fromJson(e)).toList();

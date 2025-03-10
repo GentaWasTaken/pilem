@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pilem/models/movie.dart';
 import 'package:pilem/screens/detail_screen.dart';
@@ -109,13 +110,21 @@ class _SearchScreenState extends State<SearchScreen> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                      leading: Image.network(
-                        'https://image.tmdb.org/t/p/w92${movie.posterPath}',
+                      leading: CachedNetworkImage(
+                        imageUrl: movie.posterPath != null
+                            ? 'https://image.tmdb.org/t/p/w92/${movie.posterPath}'
+                            : '',
                         width: 50,
                         height: 75,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.broken_image),
+                        placeholder: (context, url) => Center(
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.broken_image, size: 50),
                       ),
                       title: Text(movie.title),
                       subtitle: Text("Rating: ${movie.voteAverage}"),
